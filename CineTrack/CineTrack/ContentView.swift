@@ -8,14 +8,38 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State var movies: [Movie]
+    @State var shows: [TVShow]
+    @State var moviesList = true
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationStack {
+            if moviesList {
+                VStack{
+                    List(movies, id: \.self) { movie in
+                        NavigationLink {
+                            DetailPage(movie: movie)
+                        } label: {
+                            ListRow(movie: movie)
+                        }
+                    }
+                }
+                .navigationTitle("Movie Watchlist")
+                .toolbar {
+                    Button("Switch Media Type", systemImage: "plus", action: addBook)
+                }
+            }
+            else {
+                List(shows, if: \.self) { show in
+                    NavigationLink {
+                        DetailPage(show: show)
+                    } label: {
+                        ListRow(show: show)
+                    }
+                }
+                .navigationTitle("TV Show Watchlist")
+            }
         }
-        .padding()
     }
 }
 
