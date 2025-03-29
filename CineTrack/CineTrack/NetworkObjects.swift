@@ -7,6 +7,7 @@
 
 import Foundation
 
+//Struct to store the response for https://developer.themoviedb.org/reference/movie-details
 struct MovieDetails : Codable {
     var genres:[genre]?
     var title:String?
@@ -17,16 +18,25 @@ struct MovieDetails : Codable {
     var id:Int32
     
 }
-
+//Helper struct for above
 struct genre : Codable {
     var id:Int?
     var name:String?
 }
 
-//Temporary test function, gets a movie by its id number and prints it
-//will later be updated to return the movie object and hook into another
-//function which will create the SwiftData version of the movie
-func getMovieByID(id: Int32) async {
+//Struct to store the response for https://developer.themoviedb.org/reference/search-movie
+struct SearchMovie : Codable {
+    var page:Int?
+    var results:[result]?
+}
+//Helper for above
+struct result : Codable {
+    var id:Int32?
+    var title:String?
+}
+
+//Gets a movie by its id number and returns it
+func getMovieByID(id: Int32) async -> MovieDetails? {
     let url = URL(string: "https://api.themoviedb.org/3/movie/\(id)")!
     var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
     let queryItems: [URLQueryItem] = [
@@ -46,10 +56,43 @@ func getMovieByID(id: Int32) async {
         let (data, _) = try await URLSession.shared.data(for: request)
         let decoder = JSONDecoder()
         let movie = try decoder.decode(MovieDetails.self, from:data)
-        print(movie)
-        //print(String(decoding: data, as: UTF8.self))
+        return movie
     }
     catch{
         print(error)
     }
+    return nil
+}
+
+
+//Searches for movies using TMDB's API and returns the array of results.
+func searchForMovies(query: String) async -> [result]?{
+    let url = URL(string: "https://api.themoviedb.org/3/search/movie")!
+    var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
+    let queryItems: [URLQueryItem] = [
+        URLQueryItem(name: "query", value: query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)),
+      URLQueryItem(name: "include_adult", value: "false"),
+      URLQueryItem(name: "language", value: "en-US"),
+      URLQueryItem(name: "page", value: "1"),
+    ]
+    components.queryItems = components.queryItems.map { $0 + queryItems } ?? queryItems
+
+    var request = URLRequest(url: components.url!)
+    request.httpMethod = "GET"
+    request.timeoutInterval = 10
+    request.allHTTPHeaderFields = [
+      "accept": "application/json",
+      "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlMGIyOWQ1N2VhZTEzZDVhNjA5OTlhMjY1NmIxMWNkNiIsIm5iZiI6MTc0MTAzNjUzNS4wNzksInN1YiI6IjY3YzYxYmY3YzdjYWJhNDI0YzkyMWM5MyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.njE9u0pa6jnTpIW8R0O-t2stVbi8Zw2_pp551hCQsqg"
+    ]
+
+    do{
+        let (data, _) = try await URLSession.shared.data(for: request)
+        let decoder = JSONDecoder()
+        let searchresults = try decoder.decode(SearchMovie.self, from: data)
+        return searchresults.results
+    }
+    catch{
+        print(error)
+    }
+    return nil
 }
