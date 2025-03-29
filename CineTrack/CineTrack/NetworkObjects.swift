@@ -9,43 +9,43 @@ import Foundation
 
 //Struct to store the response for https://developer.themoviedb.org/reference/movie-details
 struct MovieDetails : Codable {
-    var genres:[genre]?
-    var title:String?
-    var overview:String?
-    var runtime:Int?
-    var releaase_date:String?
-    var poster_path:String?
-    var id:Int32?
-    
+    var genres:[genre]
+    var title:String
+    var overview:String
+    var runtime:Int
+    var release_date:String
+    var poster_path:String
+    var id:Int32
+
 }
 //Struct to store the response for https://developer.themoviedb.org/reference/tv-series-details
 struct TVSeriesDetails : Codable {
-    var genres:[genre]?
-    var name:String?
-    var overview:String?
-    var id:Int32?
-    var first_air_date:String?
-    var last_air_date:String?
-    var number_of_seasons:Int?
-    var poster_path:String?
+    var genres:[genre]
+    var name:String
+    var overview:String
+    var id:Int32
+    var first_air_date:String
+    var last_air_date:String
+    var number_of_seasons:Int
+    var poster_path:String
 }
 
 //Helper struct for above
 struct genre : Codable {
-    var id:Int?
-    var name:String?
+    var id:Int
+    var name:String
 }
 
 //Struct to store the response for https://developer.themoviedb.org/reference/search-movie
 //and https://developer.themoviedb.org/reference/search-tv
 struct SearchResults : Codable {
-    var page:Int?
-    var results:[result]?
+    var page:Int
+    var results:[result]
 }
 //Helper for above
 struct result : Codable {
-    var id:Int32?
-    var title:String?
+    var id:Int32
+    var title:String
 }
 
 //Gets a movie by its id number and returns it
@@ -167,4 +167,43 @@ func searchForTV(query: String) async -> [result]?{
         print(error)
     }
     return nil
+}
+
+//Takes the poster path returned by the TMDB api and turns it into a full image url
+//Note: I am making some assumptions about how TMDB stores and serves images (i.e. they
+//do it always in the same way with the same initial bit of the url) but in my testing
+//this has always worked to produce a link to an image.
+func makeFullPosterPath(pathstub: String) -> String {
+    
+    return "https://image.tmdb.org/t/p/w1280\(pathstub)"
+}
+
+//Converts the API result struct into the SwiftData object
+func convertMovieResult(result: MovieDetails) -> Movie {
+    var genreNames = [String]()
+    let releaseYear = String(result.release_date.prefix(4))
+    
+    for genre in result.genres {
+        genreNames.append(genre.name)
+    }
+    
+    return Movie(id: result.id, title: result.title, genres: genreNames, year: releaseYear, runtime: result.runtime, synopsis: result.overview, posterPath: makeFullPosterPath(pathstub: result.poster_path), mediaType: "Movie")
+}
+
+//Converts the API result struct into the SwiftData object
+func convertTVResult(result: TVSeriesDetails) -> TVShow {
+    var genreNames = [String]()
+    var years = [String]()
+    let firstYear = Int(String(result.first_air_date.prefix(4))) ?? 0
+    let lastYear = Int(String(result.last_air_date.prefix(4))) ?? 0
+    
+    for year in firstYear...lastYear {
+        years.append(String(year))
+    }
+    
+    for genre in result.genres {
+        genreNames.append(genre.name)
+    }
+    
+    return TVShow(id: result.id, title: result.name, genres: genreNames, years: years, synopsis: result.overview, posterPath: makeFullPosterPath(pathstub: result.poster_path), mediaType: "TV Show", numSeasons: result.number_of_seasons)
 }
