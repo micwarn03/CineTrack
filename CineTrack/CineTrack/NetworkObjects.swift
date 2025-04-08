@@ -19,7 +19,7 @@ struct MovieDetails : Codable, Identifiable {
 }
 
 //Struct to store the response for https://developer.themoviedb.org/reference/tv-series-details
-struct TVSeriesDetails : Codable {
+struct TVSeriesDetails : Codable, Identifiable {
     var genres:[Genre]
     var name:String
     var overview:String

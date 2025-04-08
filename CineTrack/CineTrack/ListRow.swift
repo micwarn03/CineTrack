@@ -8,28 +8,29 @@
 import SwiftUI
 
 struct ListRow: View {
-    @State var movie: MovieDetails
-    //var show: Show?
+    @State var movie: Movie?
+    @State var show: TVShow?
+    @State var isMovie: Bool
     
     //This will be made to look better later
     var body: some View {
         HStack {
-            AsyncImage(url: URL(string: "https://image.tmdb.org/t/p/w500\(movie.poster_path)")) { image in
+            AsyncImage(url: URL(string: (isMovie ? movie?.posterPath : show?.posterPath) ?? "")) { image in
                 image
                     .resizable()
                     .scaledToFit()
             } placeholder: {
                 ProgressView()
             }
-            Text(movie.title)
+            Text((isMovie ? movie?.title : show?.title) ?? "")
                 .font(.title3.bold())
             Spacer()
-            Text("\(movie.runtime) minutes")
+            Text(isMovie ? "\(movie?.runtime ?? -1) minutes" : "\(show?.numSeasons ?? -1) Seasons")
                 .font(.title3.bold())
         }
     }
 }
 
 #Preview {
-    ListRow(movie: MovieDetails(genres: [Genre(id:1, name:"Action")], title: "A Minecraft Movie", overview: "Overview", runtime: 120, release_date: "2020-01-01", poster_path: "/yFHHfHcUgGAxziP1C3lLt0q2T4s.jpg", id: 1))
+    ListRow(movie: Movie(id: 1, title: "A Minecraft Movie", genres: ["Action"], year: "2025", runtime: 120, synopsis: "Overview", posterPath: "/yFHHfHcUgGAxziP1C3lLt0q2T4s.jpg", mediaType: "movie"), isMovie: true)
 }

@@ -8,9 +8,10 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State var movies: [MovieDetails]
-    @State var shows: [MovieDetails]
-    @State var watchHistory: [MovieDetails]
+    @State var movies: [Movie]
+    @State var shows: [TVShow]
+    @State var movieHistory: [Movie]
+    @State var showHistory: [TVShow]
     @State var moviesList = true
     @State var searching = false
     @State var history = false
@@ -19,20 +20,42 @@ struct ContentView: View {
         NavigationStack {
             VStack{
                 if !history {
-                    List(moviesList ? movies : shows) { movie in
-                        NavigationLink {
-                            //DetailPage(movie: movie)
-                        } label: {
-                            ListRow(movie: movie)
+                    if(moviesList){
+                        List(movies) { movie in
+                            NavigationLink {
+                                //DetailPage(movie: movie)
+                            } label: {
+                                ListRow(movie: movie, isMovie: true)
+                            }
+                        }
+                    }
+                    else {
+                        List(shows) { show in
+                            NavigationLink {
+                                //DetailPage(movie: movie)
+                            } label: {
+                                ListRow(show: show, isMovie: false)
+                            }
                         }
                     }
                 }
                 else {
-                    List(watchHistory) { movie in
-                        NavigationLink {
-                            //DetailPage(movie: movie)
-                        } label: {
-                            ListRow(movie: movie)
+                    if(moviesList){
+                        List(movieHistory) { movie in
+                            NavigationLink {
+                                //DetailPage(movie: movie)
+                            } label: {
+                                ListRow(movie: movie, isMovie: true)
+                            }
+                        }
+                    }
+                    else {
+                        List(showHistory) { show in
+                            NavigationLink {
+                                //DetailPage(movie: movie)
+                            } label: {
+                                ListRow(show: show, isMovie: false)
+                            }
                         }
                     }
                 }
@@ -44,8 +67,10 @@ struct ContentView: View {
                         history.toggle()
                     }
                     Spacer()
-                    Button("Add Movie"){
-                        searching.toggle()
+                    NavigationLink {
+                        Search(movieList:$movies, showList: $shows, movies: moviesList)
+                    } label: {
+                        Text("Search")
                     }
                     Spacer()
                 }
@@ -63,5 +88,5 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView(movies: [MovieDetails(genres: [Genre(id:1, name:"Action")], title: "A Minecraft Movie", overview: "Overview", runtime: 120, release_date: "2020-01-01", poster_path: "/yFHHfHcUgGAxziP1C3lLt0q2T4s.jpg", id: 1)], shows: [], watchHistory: [])
+    ContentView(movies: [Movie(id: 1, title: "A Minecraft Movie", genres: ["Action"], year: "2025", runtime: 120, synopsis: "Overview", posterPath: "/yFHHfHcUgGAxziP1C3lLt0q2T4s.jpg", mediaType: "movie")], shows: [], movieHistory: [], showHistory: [])
 }

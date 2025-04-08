@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 @Model
-class TVShow {
+class TVShow : Identifiable {
     var id: Int32
     var title: String
     var genres: [String]

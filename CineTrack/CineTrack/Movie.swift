@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 @Model
-class Movie {
+class Movie : Identifiable {
     var id: Int32
     var title: String
 //    var director: String
