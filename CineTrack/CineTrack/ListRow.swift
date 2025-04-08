@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct ListRow: View {
-    var movie: Movie?
-    var show: Show?
+    //var movie: Movie?
+    //var show: Show?
     
     var body: some View {
         Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)

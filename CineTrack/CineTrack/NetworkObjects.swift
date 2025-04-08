@@ -8,7 +8,7 @@
 import Foundation
 
 //Struct to store the response for https://developer.themoviedb.org/reference/movie-details
-struct MovieDetails : Codable {
+struct MovieDetails : Codable, Identifiable {
     var genres:[genre]
     var title:String
     var overview:String
@@ -16,8 +16,8 @@ struct MovieDetails : Codable {
     var release_date:String
     var poster_path:String
     var id:Int32
-
 }
+
 //Struct to store the response for https://developer.themoviedb.org/reference/tv-series-details
 struct TVSeriesDetails : Codable {
     var genres:[genre]

@@ -8,41 +8,37 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State var movies: [Movie]
-    @State var shows: [TVShow]
+    @State var movies: [MovieDetails]
+    @State var shows: [MovieDetails]
     @State var moviesList = true
+    @State var searching = false
     
     var body: some View {
         NavigationStack {
-            if moviesList {
-                VStack{
-                    List(movies, id: \.self) { movie in
-                        NavigationLink {
-                            DetailPage(movie: movie)
-                        } label: {
-                            ListRow(movie: movie)
-                        }
+            VStack{
+                List(moviesList ? movies : shows) { movie in
+                    NavigationLink {
+                        //DetailPage(movie: movie)
+                    } label: {
+                        //ListRow(movie: movie)
                     }
                 }
-                .navigationTitle("Movie Watchlist")
-                .toolbar {
-                    Button("Switch Media Type", systemImage: "plus", action: addBook)
+                Spacer()
+                Button("Add Movie"){
+                    searching.toggle()
                 }
             }
-            else {
-                List(shows, if: \.self) { show in
-                    NavigationLink {
-                        DetailPage(show: show)
-                    } label: {
-                        ListRow(show: show)
-                    }
+            .navigationTitle(moviesList ? "Movie Watchlist" : "TV Show Watchlist")
+            .toolbar {
+                Button("Switch Media Type", systemImage: "arrow.trianglehead.2.clockwise"){
+                    moviesList.toggle()
                 }
-                .navigationTitle("TV Show Watchlist")
             }
         }
+        
     }
 }
 
 #Preview {
-    ContentView()
+    ContentView(movies: [], shows: [])
 }
