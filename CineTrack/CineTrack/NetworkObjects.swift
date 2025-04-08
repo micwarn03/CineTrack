@@ -9,7 +9,7 @@ import Foundation
 
 //Struct to store the response for https://developer.themoviedb.org/reference/movie-details
 struct MovieDetails : Codable, Identifiable {
-    var genres:[genre]
+    var genres:[Genre]
     var title:String
     var overview:String
     var runtime:Int
@@ -20,7 +20,7 @@ struct MovieDetails : Codable, Identifiable {
 
 //Struct to store the response for https://developer.themoviedb.org/reference/tv-series-details
 struct TVSeriesDetails : Codable {
-    var genres:[genre]
+    var genres:[Genre]
     var name:String
     var overview:String
     var id:Int32
@@ -31,7 +31,7 @@ struct TVSeriesDetails : Codable {
 }
 
 //Helper struct for above
-struct genre : Codable {
+struct Genre : Codable {
     var id:Int
     var name:String
 }

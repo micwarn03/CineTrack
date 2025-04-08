@@ -12,7 +12,7 @@ import SwiftData
 struct CineTrackApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView(movies: [], shows: [])
+            ContentView(movies: [], shows: [], watchHistory: [])
         }
         .modelContainer(for: Movie.self)
     }
