@@ -45,7 +45,8 @@ struct SearchResults : Codable {
 //Helper for above
 struct result : Codable {
     var id:Int32
-    var title:String
+    var title:String?
+    var name:String?
 }
 
 //Gets a movie by its id number and returns it

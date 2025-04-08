@@ -26,7 +26,7 @@ struct Search: View {
                     movieResults = []
                     showResults = []
                     Task {
-                        results = movies ? await searchForMovies(query: searchText) ?? [] : await searchForTV(query: searchText) ?? []
+                        results = movies ? (await searchForMovies(query: searchText) ?? []) : (await searchForTV(query: searchText) ?? [])
                         if movies {
                             for result in results {
                                 if let movie = await getMovieByID(id: result.id){
