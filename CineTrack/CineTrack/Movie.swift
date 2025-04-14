@@ -12,7 +12,6 @@ import SwiftData
 class Movie : Identifiable {
     var id: Int32
     var title: String
-//    var director: String
     var genres: [String]
     var year: String
     var runtime: Int
@@ -23,10 +22,9 @@ class Movie : Identifiable {
     var userReview: String? = nil
     var thumbsUp: Bool? = nil
     
-    init(id: Int32, title: String, /*director: String,*/ genres: [String], year: String, runtime: Int, synopsis: String, posterPath: String, mediaType: String) {
+    init(id: Int32, title: String, genres: [String], year: String, runtime: Int, synopsis: String, posterPath: String, mediaType: String) {
         self.id = id
         self.title = title
-//        self.director = director
         self.genres = genres
         self.year = year
         self.runtime = runtime

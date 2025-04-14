@@ -6,12 +6,18 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ContentView: View {
-    @State var movies: [Movie]
-    @State var shows: [TVShow]
-    @State var movieHistory: [Movie]
-    @State var showHistory: [TVShow]
+    
+    @Environment(\.modelContext) private var context
+    @Query var allMovies: [Movie]
+    @Query var allTVShows: [TVShow]
+    
+//    @State var movies: [Movie]
+//    @State var shows: [TVShow]
+//    @State var movieHistory: [Movie]
+//    @State var showHistory: [TVShow]
     @State var moviesList = true
     @State var searching = false
     @State var history = false
@@ -20,19 +26,19 @@ struct ContentView: View {
         NavigationStack {
             VStack{
                 if !history {
-                    if(moviesList){
-                        List(movies) { movie in
+                    if (moviesList) {
+                        List(filteredMovies(watched: false)) { movie in
                             NavigationLink {
-                                //DetailPage(movie: movie)
+                                DetailPage(movie: movie, show: nil, isMovie: true)
                             } label: {
                                 ListRow(movie: movie, isMovie: true)
                             }
                         }
                     }
                     else {
-                        List(shows) { show in
+                        List(filteredShows(watched: false)) { show in
                             NavigationLink {
-                                //DetailPage(movie: movie)
+                                DetailPage(movie: nil, show: show, isMovie: false)
                             } label: {
                                 ListRow(show: show, isMovie: false)
                             }
@@ -41,18 +47,18 @@ struct ContentView: View {
                 }
                 else {
                     if(moviesList){
-                        List(movieHistory) { movie in
+                        List(filteredMovies(watched: true)) { movie in
                             NavigationLink {
-                                //DetailPage(movie: movie)
+                                DetailPage(movie: movie, show: nil, isMovie: true)
                             } label: {
                                 ListRow(movie: movie, isMovie: true)
                             }
                         }
                     }
                     else {
-                        List(showHistory) { show in
+                        List(filteredShows(watched: true)) { show in
                             NavigationLink {
-                                //DetailPage(movie: movie)
+                                DetailPage(movie: nil, show: show, isMovie: false)
                             } label: {
                                 ListRow(show: show, isMovie: false)
                             }
@@ -67,8 +73,13 @@ struct ContentView: View {
                         history.toggle()
                     }
                     Spacer()
+//                    NavigationLink {
+//                        Search(movieList:$movies, showList: $shows, movies: moviesList)
+//                    } label: {
+//                        Text("Search")
+//                    }
                     NavigationLink {
-                        Search(movieList:$movies, showList: $shows, movies: moviesList)
+                        Search(movies: moviesList)
                     } label: {
                         Text("Search")
                     }
@@ -85,8 +96,16 @@ struct ContentView: View {
         }
         
     }
+    
+    private func filteredMovies(watched: Bool) -> [Movie] {
+        allMovies.filter { watched ? $0.dateWatched != nil : $0.dateWatched == nil}
+    }
+    
+    private func filteredShows(watched: Bool) -> [TVShow] {
+        allTVShows.filter { watched ? $0.dateWatched != nil : $0.dateWatched == nil}
+    }
 }
 
 #Preview {
-    ContentView(movies: [Movie(id: 1, title: "A Minecraft Movie", genres: ["Action"], year: "2025", runtime: 120, synopsis: "Overview", posterPath: "/yFHHfHcUgGAxziP1C3lLt0q2T4s.jpg", mediaType: "movie")], shows: [], movieHistory: [], showHistory: [])
+    ContentView(/*movies: [Movie(id: 1, title: "A Minecraft Movie", genres: ["Action"], year: "2025", runtime: 120, synopsis: "Overview", posterPath: "/yFHHfHcUgGAxziP1C3lLt0q2T4s.jpg", mediaType: "movie")], shows: [], movieHistory: [], showHistory: []*/)
 }

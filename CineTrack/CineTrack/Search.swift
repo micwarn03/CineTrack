@@ -9,12 +9,16 @@ import SwiftUI
 
 struct Search: View {
     @Environment(\.dismiss) var dismiss
+    @Environment(\.modelContext) private var context
+    
+    
     @State var searchText = ""
     @State var results: [result] = []
     @State var movieResults: [MovieDetails] = []
     @State var showResults: [TVSeriesDetails] = []
-    @Binding var movieList: [Movie]
-    @Binding var showList: [TVShow]
+//    @Binding var movieList: [Movie]
+//    @Binding var showList: [TVShow]
+    
     @State var movies: Bool
     
     var body: some View {
@@ -49,7 +53,9 @@ struct Search: View {
                 List(movieResults) { result in
                     let movie = convertMovieResult(result: result)
                     Button {
-                        movieList.append(movie)
+//                        movieList.append(movie)
+                        context.insert(movie)
+                        try? context.save()
                         dismiss()
                     } label : {
                         ListRow(movie: movie, isMovie: true)
@@ -60,7 +66,9 @@ struct Search: View {
                 List(showResults) { result in
                     let show = convertTVResult(result: result)
                     Button {
-                        showList.append(show)
+//                        showList.append(show)
+                        context.insert(show)
+                        try? context.save()
                         dismiss()
                     } label : {
                         ListRow(show: show, isMovie: false)
