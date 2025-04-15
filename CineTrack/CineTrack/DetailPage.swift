@@ -8,10 +8,13 @@
 import SwiftUI
 
 struct DetailPage: View {
+    @Environment(\.modelContext) private var context
+    @State private var showReviewSheet = false
     
     let movie: Movie?
     let show: TVShow?
     let isMovie: Bool
+    
     
     var body: some View {
         VStack {
@@ -20,7 +23,89 @@ struct DetailPage: View {
             Text(movie?.synopsis ?? show?.synopsis ?? "")
                 .font(.body)
                 .padding()
+            if isMovie, let movie = movie {
+                if movie.dateWatched == nil {
+                    Button("Mark as Watched") {
+                        movie.dateWatched = Date()
+                        try? context.save()
+                    }
+                    .buttonStyle(.borderedProminent)
+                } else {
+                    HStack {
+                        Text("Watched on \(formatDate(movie.dateWatched))")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        if let thumbsUp = movie.thumbsUp {
+                            if thumbsUp {
+                                Image(systemName: "hand.thumbsup.fill")
+                                    .foregroundStyle(.green)
+                            } else {
+                                Image(systemName: "hand.thumbsdown.fill")
+                                    .foregroundStyle(.red)
+                            }
+                        } else {
+                            Spacer()
+                        }
+                    }
+                    
+                    if let review = movie.userReview, !review.isEmpty {
+                        Text("Your Review: \(review)")
+                            .padding()
+                    }
+                    
+                    Button("Add / Edit Rating") {
+                        showReviewSheet = true
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+            }
+            else if let show = show {
+                if show.dateWatched == nil {
+                    Button("Mark as Watched") {
+                        show.dateWatched = Date()
+                        try? context.save()
+                    }
+                    .buttonStyle(.borderedProminent)
+                } else {
+                    HStack {
+                        Text("Watched on \(formatDate(show.dateWatched))")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        if let thumbsUp = show.thumbsUp {
+                            if thumbsUp {
+                                Image(systemName: "hand.thumbsup.fill")
+                                    .foregroundStyle(.green)
+                            } else {
+                                Image(systemName: "hand.thumbsdown.fill")
+                                    .foregroundStyle(.red)
+                            }
+                        } else {
+                            Spacer()
+                        }
+                    }
+                    
+                    if let review = show.userReview, !review.isEmpty {
+                        Text("Your Review: \(review)")
+                            .padding()
+                    }
+                    
+                    Button("Add / Edit Rating") {
+                        showReviewSheet = true
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+            }
         }
+        .sheet(isPresented: $showReviewSheet) {
+            ReviewView(movie: movie, show: show, isMovie: isMovie)
+        }
+    }
+    
+    private func formatDate(_ date: Date?) -> String {
+        guard let date = date else { return "" }
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .medium
+        return dateFormatter.string(from: date)
     }
 }
 

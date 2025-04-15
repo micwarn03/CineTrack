@@ -17,19 +17,36 @@ struct DetailHeader: View {
         return movie?.genres.joined(separator: ", ") ?? ""
     }
     
+    var showYearRange: String {
+        guard let show = show,
+              let first = show.years.first,
+              let last = show.years.last else {
+            return ""
+        }
+        
+        if first == last {
+            return "\(first)"
+        } else {
+            return "\(first)-\(last)"
+        }
+    }
+    
     var body: some View {
         HStack {
             AsyncImage(url: URL(string: (isMovie ? movie?.posterPath : show?.posterPath) ?? "")) { image in
                 image
                     .resizable()
-                    .scaledToFit()
+                    .scaledToFill()
+                    .frame(width: 120, height: 180)
+                    .clipped()
             } placeholder: {
+                ProgressView()
             }
             
             VStack (alignment: .leading) {
                 Text((isMovie ? movie?.title : show?.title) ?? "")
                     .font(.title)
-                Text((isMovie ? movie?.year : show?.years.joined(separator: ", ")) ?? "")
+                Text(isMovie ? (movie?.year ?? "") : showYearRange)
                 Text(isMovie ? "\(movie?.runtime ?? -1) minutes" : "\(show?.numSeasons ?? -1) Seasons")
                     .font(.caption)
                     .foregroundStyle(.secondary)

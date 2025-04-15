@@ -14,10 +14,6 @@ struct ContentView: View {
     @Query var allMovies: [Movie]
     @Query var allTVShows: [TVShow]
     
-//    @State var movies: [Movie]
-//    @State var shows: [TVShow]
-//    @State var movieHistory: [Movie]
-//    @State var showHistory: [TVShow]
     @State var moviesList = true
     @State var searching = false
     @State var history = false
@@ -73,11 +69,6 @@ struct ContentView: View {
                         history.toggle()
                     }
                     Spacer()
-//                    NavigationLink {
-//                        Search(movieList:$movies, showList: $shows, movies: moviesList)
-//                    } label: {
-//                        Text("Search")
-//                    }
                     NavigationLink {
                         Search(movies: moviesList)
                     } label: {

@@ -49,11 +49,11 @@ struct Search: View {
                 }
                 .buttonStyle(.borderedProminent)
             }
+            .padding()
             if movies {
                 List(movieResults) { result in
                     let movie = convertMovieResult(result: result)
                     Button {
-//                        movieList.append(movie)
                         context.insert(movie)
                         try? context.save()
                         dismiss()
@@ -66,7 +66,6 @@ struct Search: View {
                 List(showResults) { result in
                     let show = convertTVResult(result: result)
                     Button {
-//                        showList.append(show)
                         context.insert(show)
                         try? context.save()
                         dismiss()
