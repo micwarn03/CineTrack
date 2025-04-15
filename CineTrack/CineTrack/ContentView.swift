@@ -18,6 +18,8 @@ struct ContentView: View {
     @State var searching = false
     @State var history = false
     
+    @AppStorage("firstLaunch") var firstLaunch = true
+    
     var body: some View {
         NavigationStack {
             VStack{
@@ -83,6 +85,9 @@ struct ContentView: View {
                 Button("Switch Media Type", systemImage: "arrow.trianglehead.2.clockwise"){
                     moviesList.toggle()
                 }
+            }
+            .sheet(isPresented:$firstLaunch){
+                IntroSheet(firstLaunch: $firstLaunch)
             }
         }
         
