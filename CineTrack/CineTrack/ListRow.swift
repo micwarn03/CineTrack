@@ -19,14 +19,21 @@ struct ListRow: View {
                 image
                     .resizable()
                     .scaledToFit()
+                    .frame(width:100)
             } placeholder: {
                 ProgressView()
             }
-            Text((isMovie ? movie?.title : show?.title) ?? "")
-                .font(.title3.bold())
             Spacer()
-            Text(isMovie ? "\(movie?.runtime ?? -1) minutes" : "\(show?.numSeasons ?? -1) Seasons")
-                .font(.title3.bold())
+            VStack {
+                Spacer()
+                Text((isMovie ? movie?.title : show?.title) ?? "")
+                    .font(.title2.bold())
+                Spacer()
+                Text(isMovie ? "\(movie?.runtime ?? -1) minutes" : "\(show?.numSeasons ?? -1) Seasons")
+                    .font(.title3)
+                Spacer()
+            }
+            Spacer()
         }
     }
 }
