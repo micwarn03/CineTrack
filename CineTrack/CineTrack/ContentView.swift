@@ -41,7 +41,7 @@ struct ContentView: View {
                                 ListRow(show: show, isMovie: false)
                             }
                         }
-                    }
+                    } 
                 }
                 else {
                     if(moviesList){
