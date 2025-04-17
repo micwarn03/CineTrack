@@ -15,90 +15,90 @@ struct DetailPage: View {
     let show: TVShow?
     let isMovie: Bool
     
-    
     var body: some View {
         VStack {
-            DetailHeader(movie: movie, show: show, isMovie: isMovie)
-                .padding()
-            Text(movie?.synopsis ?? show?.synopsis ?? "")
-                .font(.body)
-                .padding()
-            if isMovie, let movie = movie {
-                if movie.dateWatched == nil {
-                    Button("Mark as Watched") {
-                        movie.dateWatched = Date()
-                        try? context.save()
-                    }
-                    .buttonStyle(.borderedProminent)
-                } else {
-                    HStack {
-                        Text("Watched on \(formatDate(movie.dateWatched))")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                        if let thumbsUp = movie.thumbsUp {
-                            if thumbsUp {
-                                Image(systemName: "hand.thumbsup.fill")
-                                    .foregroundStyle(.green)
-                            } else {
-                                Image(systemName: "hand.thumbsdown.fill")
-                                    .foregroundStyle(.red)
+            ScrollView {
+                VStack {
+                    DetailHeader(movie: movie, show: show, isMovie: isMovie)
+                        .padding()
+                    Text(movie?.synopsis ?? show?.synopsis ?? "")
+                        .font(.body)
+                        .padding()
+                    
+                    if isMovie, let movie = movie {
+                        if movie.dateWatched == nil {
+                            Button("Mark as Watched") {
+                                movie.dateWatched = Date()
+                                try? context.save()
                             }
+                            .buttonStyle(.borderedProminent)
                         } else {
-                            Spacer()
+                            HStack {
+                                Text("Watched on \(formatDate(movie.dateWatched))")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                                if let thumbsUp = movie.thumbsUp {
+                                    if thumbsUp {
+                                        Image(systemName: "hand.thumbsup.fill")
+                                            .foregroundStyle(.green)
+                                    } else {
+                                        Image(systemName: "hand.thumbsdown.fill")
+                                            .foregroundStyle(.red)
+                                    }
+                                } else {
+                                    Spacer()
+                                }
+                            }
+                            if let review = movie.userReview, !review.isEmpty {
+                                Text("Your Review: \(review)")
+                                    .padding()
+                            }
                         }
                     }
                     
-                    if let review = movie.userReview, !review.isEmpty {
-                        Text("Your Review: \(review)")
-                            .padding()
-                    }
-                    
-                    Button("Add / Edit Rating") {
-                        showReviewSheet = true
-                    }
-                    .buttonStyle(.borderedProminent)
-                }
-            }
-            else if let show = show {
-                if show.dateWatched == nil {
-                    Button("Mark as Watched") {
-                        show.dateWatched = Date()
-                        try? context.save()
-                    }
-                    .buttonStyle(.borderedProminent)
-                } else {
-                    HStack {
-                        Text("Watched on \(formatDate(show.dateWatched))")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                        if let thumbsUp = show.thumbsUp {
-                            if thumbsUp {
-                                Image(systemName: "hand.thumbsup.fill")
-                                    .foregroundStyle(.green)
-                            } else {
-                                Image(systemName: "hand.thumbsdown.fill")
-                                    .foregroundStyle(.red)
+                    else if let show = show {
+                        if show.dateWatched == nil {
+                            Button("Mark as Watched") {
+                                show.dateWatched = Date()
+                                try? context.save()
                             }
+                            .buttonStyle(.borderedProminent)
                         } else {
-                            Spacer()
+                            HStack {
+                                Text("Watched on \(formatDate(show.dateWatched))")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                                if let thumbsUp = show.thumbsUp {
+                                    if thumbsUp {
+                                        Image(systemName: "hand.thumbsup.fill")
+                                            .foregroundStyle(.green)
+                                    } else {
+                                        Image(systemName: "hand.thumbsdown.fill")
+                                            .foregroundStyle(.red)
+                                    }
+                                } else {
+                                    Spacer()
+                                }
+                            }
+                            
+                            if let review = show.userReview, !review.isEmpty {
+                                Text("Your Review:")
+                                Text("\(review)")
+                                    .padding()
+                            }
                         }
                     }
                     
-                    if let review = show.userReview, !review.isEmpty {
-                        Text("Your Review: \(review)")
-                            .padding()
-                    }
-                    
-                    Button("Add / Edit Rating") {
-                        showReviewSheet = true
-                    }
-                    .buttonStyle(.borderedProminent)
                 }
             }
+            .sheet(isPresented: $showReviewSheet) {
+                ReviewView(movie: movie, show: show, isMovie: isMovie)
+            }
         }
-        .sheet(isPresented: $showReviewSheet) {
-            ReviewView(movie: movie, show: show, isMovie: isMovie)
+        Button("Add / Edit Rating") {
+            showReviewSheet = true
         }
+        .buttonStyle(.borderedProminent)
     }
     
     private func formatDate(_ date: Date?) -> String {
@@ -107,6 +107,7 @@ struct DetailPage: View {
         dateFormatter.dateStyle = .medium
         return dateFormatter.string(from: date)
     }
+    
 }
 
 #Preview {

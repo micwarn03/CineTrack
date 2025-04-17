@@ -46,6 +46,9 @@ struct DetailHeader: View {
             VStack (alignment: .leading) {
                 Text((isMovie ? movie?.title : show?.title) ?? "")
                     .font(.title)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
+                    .layoutPriority(1)
                 Text(isMovie ? (movie?.year ?? "") : showYearRange)
                 Text(isMovie ? "\(movie?.runtime ?? -1) minutes" : "\(show?.numSeasons ?? -1) Seasons")
                     .font(.caption)
