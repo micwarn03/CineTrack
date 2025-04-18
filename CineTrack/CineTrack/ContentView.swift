@@ -67,7 +67,7 @@ struct ContentView: View {
                 //Will style to make buttons look better later 
                 HStack{
                     Spacer()
-                    Button("History"){
+                    Button(history ? "Watch List" : "History"){
                         history.toggle()
                     }
                     Spacer()
