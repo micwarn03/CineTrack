@@ -16,8 +16,6 @@ struct Search: View {
     @State var results: [result] = []
     @State var movieResults: [MovieDetails] = []
     @State var showResults: [TVSeriesDetails] = []
-//    @Binding var movieList: [Movie]
-//    @Binding var showList: [TVShow]
     
     @State var movies: Bool
     

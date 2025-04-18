@@ -27,7 +27,7 @@ struct ContentView: View {
                     if (moviesList) {
                         List(filteredMovies(watched: false)) { movie in
                             NavigationLink {
-                                DetailPage(movie: movie, show: nil, isMovie: true)
+                                DetailPage(media: movie)
                             } label: {
                                 ListRow(movie: movie, isMovie: true)
                             }
@@ -36,7 +36,7 @@ struct ContentView: View {
                     else {
                         List(filteredShows(watched: false)) { show in
                             NavigationLink {
-                                DetailPage(movie: nil, show: show, isMovie: false)
+                                DetailPage(media: show)
                             } label: {
                                 ListRow(show: show, isMovie: false)
                             }
@@ -47,7 +47,7 @@ struct ContentView: View {
                     if(moviesList){
                         List(filteredMovies(watched: true)) { movie in
                             NavigationLink {
-                                DetailPage(movie: movie, show: nil, isMovie: true)
+                                DetailPage(media: movie)
                             } label: {
                                 ListRow(movie: movie, isMovie: true)
                             }
@@ -56,7 +56,7 @@ struct ContentView: View {
                     else {
                         List(filteredShows(watched: true)) { show in
                             NavigationLink {
-                                DetailPage(movie: nil, show: show, isMovie: false)
+                                DetailPage(media: show)
                             } label: {
                                 ListRow(show: show, isMovie: false)
                             }
@@ -102,6 +102,6 @@ struct ContentView: View {
     }
 }
 
-#Preview {
-    ContentView(/*movies: [Movie(id: 1, title: "A Minecraft Movie", genres: ["Action"], year: "2025", runtime: 120, synopsis: "Overview", posterPath: "/yFHHfHcUgGAxziP1C3lLt0q2T4s.jpg", mediaType: "movie")], shows: [], movieHistory: [], showHistory: []*/)
-}
+//#Preview {
+//    ContentView(/*movies: [Movie(id: 1, title: "A Minecraft Movie", genres: ["Action"], year: "2025", runtime: 120, synopsis: "Overview", posterPath: "/yFHHfHcUgGAxziP1C3lLt0q2T4s.jpg", mediaType: "movie")], shows: [], movieHistory: [], showHistory: []*/)
+//}
