@@ -20,12 +20,10 @@ struct ReviewView: View {
             Text("Your Thoughts")
                 .font(.headline)
             
-            TextField("Your thoughts...", text: $draft)
-                        .onAppear { draft = media.userReview ?? "" }
-                        .onSubmit {
-                            media.userReview = draft.isEmpty ? nil : draft
-                            try? context.save()
-                        }
+            TextField("Your thoughts...", text: Binding(
+                get: { media.userReview ?? "" },
+                set: { media.userReview = $0 }
+            ))
             .textFieldStyle(.roundedBorder)
             .padding()
             
