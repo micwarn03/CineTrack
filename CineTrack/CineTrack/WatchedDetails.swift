@@ -9,41 +9,46 @@ import SwiftUI
 
 struct WatchedDetails: View {
     @Environment(\.modelContext) private var context
+    
     var media: VisualMedia
     
-
-
     var body: some View {
-        if media.dateWatched == nil {
-            Button("Mark as Watched") {
-                media.dateWatched = Date()
-                try? context.save()
-            }
-            .buttonStyle(.borderedProminent)
-
-        } else {
-            VStack {
-                HStack {
-                    Text(watchedLine(for: media.dateWatched!))
+        
+        if let date = media.dateWatched {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack(spacing: 8) {
+                    Text(watchedLine(for: date))
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
-
+                    
                     if let thumbsUp = media.thumbsUp {
-                        Image(systemName: thumbsUp ? "hand.thumbsup.fill"
-                                                  : "hand.thumbsdown.fill")
-                            .foregroundStyle(thumbsUp ? .green : .red)
+                        Image(systemName: thumbsUp
+                              ? "hand.thumbsup.fill"
+                              : "hand.thumbsdown.fill"
+                        )
+                        .foregroundStyle(thumbsUp ? .green : .red)
                     }
                 }
-
+                .frame(maxWidth: .infinity, alignment: .center)
+                
                 if let review = media.userReview, !review.isEmpty {
-                    Text("Your Review:")
-                        .font(.headline)
-                    Text(review)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Your Review")
+                            .font(.headline)
+                        Text(review)
+                            .font(.body)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
                 }
             }
+            .padding()
+            .background(.ultraThinMaterial)
+            .cornerRadius(12)
+            .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 4)
+            .padding(.horizontal)
         }
     }
-
+    
     private func watchedLine(for date: Date) -> String {
         let df = DateFormatter()
         df.dateStyle = .medium

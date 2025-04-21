@@ -24,39 +24,62 @@ struct DetailHeader: View {
                     .resizable()
                     .scaledToFill()
                     .frame(width: 120, height: 180)
-                    .clipped()
+                    .cornerRadius(8)
+                    .shadow(radius: 4)
+                    .overlay(
+                        LinearGradient(
+                            colors: [.clear, .black.opacity(0.1)],
+                            startPoint: .top,
+                            endPoint: .bottom)
+                    )
+                    .cornerRadius(8)
             } placeholder: {
-                ProgressView()
+                Color.secondary.opacity(0.2)
+                    .frame(width: 120, height: 180)
+                    .cornerRadius(8)
             }
             
-            VStack (alignment: .leading) {
+            VStack (alignment: .leading, spacing: 6) {
                 Text(media.title)
                     .font(.title.bold())
+                    .fixedSize(horizontal: false, vertical: true)
                     .lineLimit(2)
-                    .layoutPriority(1)
+                
+                let dateText: String = {
+                    if let movie = media as? Movie {
+                        return movie.year
+                    }
+                    else if let show = media as? TVShow {
+                        let first = show.years.first ?? ""
+                        let last = show.years.last ?? first
+                        return (first == last) ? first : "\(first)-\(last)"
+                    }
+                    return ""
+                }()
+                
+                Label(dateText, systemImage: "calendar")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
                 
                 if let movie = media as? Movie {
-                    Text(movie.year)
-                } else if let show = media as? TVShow,
-                          let first = show.years.first,
-                          let last = show.years.last {
-                    Text(first == last ? first : "\(first)-\(last)")
+                    Label("\(movie.runtime) minutes", systemImage: "clock")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+                else if let show = media as? TVShow {
+                    Label("\(show.numSeasons) seasons", systemImage: "tv")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
                 }
                 
-                if let movie = media as? Movie {
-                    Text("\(movie.runtime) minutes")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                } else if let show = media as? TVShow {
-                    Text("\(show.numSeasons) seasons")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
                 Text(generateGenreString())
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
+            
+            Spacer()
         }
+        .padding(.horizontal)
     }
 }
 

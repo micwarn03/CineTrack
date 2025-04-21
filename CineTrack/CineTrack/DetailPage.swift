@@ -16,28 +16,47 @@ struct DetailPage: View {
     var body: some View {
         VStack {
             ScrollView {
-                VStack {
+                VStack (spacing: 16) {
                     DetailHeader(media: media)
-                        .padding()
+                        .padding(.horizontal)
                     
-                    Divider()
-                    
-                    Text(media.synopsis)
-                        .padding()
-                    
-                    
-                    WatchedDetails(media: media)
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text(media.synopsis)
+                            .font(.body)
+                            .foregroundStyle(Color.primary)
+                            .padding()
+                        
+                        WatchedDetails(media: media)
+                    }
                 }
+                .padding(.vertical)
             }
             .sheet(isPresented: $showReviewSheet) {
                 ReviewView(media: media)
             }
-        }
-        if media.dateWatched != nil {
-            Button("Add / Edit Rating") {
-                showReviewSheet = true
+            if media.dateWatched == nil {
+                Spacer()
+                Button("Mark as Watched") {
+                    media.dateWatched = Date()
+                    try? context.save()
+                    showReviewSheet = true
+                }
+                .buttonStyle(.borderedProminent)
+                .padding(.bottom, 30)
             }
-            .buttonStyle(.borderedProminent)
+        }
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                if media.dateWatched != nil {
+                    Button {
+                        showReviewSheet = true
+                    } label: {
+                        Label("Review", systemImage: "star.bubble")
+                    }
+                    .buttonStyle(.bordered)
+                }
+            }
         }
     }
     
