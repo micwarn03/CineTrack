@@ -20,28 +20,46 @@ struct ContentView: View {
     
     @AppStorage("firstLaunch") var firstLaunch = true
     
+    func deleteMovie(_ indexSet: IndexSet) {
+        for index in indexSet {
+            context.delete(allMovies[index])
+        }
+    }
+    
+    func deleteShow(_ indexSet: IndexSet) {
+        for index in indexSet {
+            context.delete(allTVShows[index])
+        }
+    }
+    
     var body: some View {
         NavigationStack {
             VStack{
                 if !history {
                     if (moviesList) {
-                        List(filteredMovies(watched: false)) { movie in
-                            NavigationLink {
-                                DetailPage(media: movie)
-                            } label: {
-                                ListRow(movie: movie, isMovie: true)
+                        List {
+                            ForEach(filteredMovies(watched: false)) { movie in
+                                NavigationLink {
+                                    DetailPage(media: movie)
+                                } label: {
+                                    ListRow(movie: movie, isMovie: true)
+                                }
                             }
+                            .onDelete(perform: deleteMovie)
                         }
                     }
                     else {
-                        List(filteredShows(watched: false)) { show in
-                            NavigationLink {
-                                DetailPage(media: show)
-                            } label: {
-                                ListRow(show: show, isMovie: false)
+                        List {
+                            ForEach(filteredShows(watched: false)) { show in
+                                NavigationLink {
+                                    DetailPage(media: show)
+                                } label: {
+                                    ListRow(show: show, isMovie: false)
+                                }
                             }
+                            .onDelete(perform: deleteShow)
                         }
-                    } 
+                    }
                 }
                 else {
                     if(moviesList){

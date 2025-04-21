@@ -25,6 +25,7 @@ struct DetailPage: View {
                     Text(media.synopsis)
                         .padding()
                     
+                    
                     WatchedDetails(media: media)
                 }
             }
