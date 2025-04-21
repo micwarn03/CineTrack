@@ -98,7 +98,7 @@ struct ContentView: View {
                 }
                 .buttonStyle(.borderedProminent)
             }
-            .navigationTitle(history ? "Watch History" : moviesList ? "Movie Watchlist" : "TV Show Watchlist")
+            .navigationTitle(history ? (moviesList ? "Movie Watch History" : "TV Show Watch History") : moviesList ? "Movie Watchlist" : "TV Show Watchlist")
             .toolbar {
                 Button("Switch Media Type", systemImage: "arrow.trianglehead.2.clockwise"){
                     moviesList.toggle()
