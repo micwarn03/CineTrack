@@ -8,6 +8,17 @@
 import SwiftUI
 import SwiftData
 
+enum SortOption: String, CaseIterable, Identifiable {
+    case aToZ = "A → Z"
+    case zToA = "Z → A"
+    case newToOld = "Newest → Oldest"
+    case oldToNew = "Oldest → Newest"
+    case runtimeAscending = "Runtime ↑"
+    case runtimeDescending = "Runtime ↓"
+    
+    var id: String { rawValue }
+}
+
 struct ContentView: View {
     
     @Environment(\.modelContext) private var context
@@ -17,6 +28,9 @@ struct ContentView: View {
     @State var moviesList = true
     @State var searching = false
     @State var history = false
+    
+    @State private var sortOption: SortOption = .aToZ
+    @State private var selectedGenres: Set<String> = []
     
     @AppStorage("firstLaunch") var firstLaunch = true
     
@@ -32,13 +46,94 @@ struct ContentView: View {
         }
     }
     
+    private var availableGenres: [String] {
+        let raw = moviesList
+        ? allMovies.flatMap(\.genres)
+        : allTVShows.flatMap(\.genres)
+        return Array(Set(raw)).sorted()
+    }
+    
+    private var sortedMovies: [Movie] {
+        var list = allMovies.filter {
+            history ? $0.dateWatched != nil : $0.dateWatched == nil
+        }
+        if !selectedGenres.isEmpty {
+            list = list.filter {
+                !Set($0.genres).isDisjoint(with: selectedGenres)
+            }
+        }
+        switch sortOption {
+            case .aToZ:
+                return list.sorted {
+                    $0.title.localizedLowercase < $1.title.localizedLowercase
+                }
+            case .zToA:
+                return list.sorted {
+                    $0.title.localizedLowercase > $1.title.localizedLowercase
+                }
+            case .newToOld:
+                return list.sorted {
+                    (Int($0.year) ?? 0) > (Int($1.year) ?? 0)
+                }
+            case .oldToNew:
+                return list.sorted {
+                    (Int($0.year) ?? 0) < (Int($1.year) ?? 0)
+                }
+            case .runtimeAscending:
+                return list.sorted {
+                    $0.runtime < $1.runtime
+                }
+            case .runtimeDescending:
+                return list.sorted {
+                    $0.runtime > $1.runtime
+                }
+        }
+    }
+    
+    private var sortedShows: [TVShow] {
+        var list = allTVShows.filter {
+            history ? $0.dateWatched != nil : $0.dateWatched == nil
+        }
+        if !selectedGenres.isEmpty {
+            list = list.filter {
+                !Set($0.genres).isDisjoint(with: selectedGenres)
+            }
+        }
+        switch sortOption {
+            case .aToZ:
+                return list.sorted {
+                    $0.title.localizedLowercase < $1.title.localizedLowercase
+                }
+            case .zToA:
+                return list.sorted {
+                    $0.title.localizedLowercase > $1.title.localizedLowercase
+                }
+            case .newToOld:
+                return list.sorted {
+                    (Int($0.years.last ?? "") ?? 0) > (Int($1.years.last ?? "") ?? 0)
+                }
+            case .oldToNew:
+                return list.sorted {
+                    (Int($0.years.last ?? "") ?? 0) < (Int($1.years.last ?? "") ?? 0)                }
+            case .runtimeAscending:
+                return list.sorted {
+                    $0.numSeasons < $1.numSeasons
+                }
+            case .runtimeDescending:
+                return list.sorted {
+                    $0.numSeasons > $1.numSeasons
+                }
+        }
+    }
+    
     var body: some View {
         NavigationStack {
-            VStack{
+            VStack {
+                
                 if !history {
                     if (moviesList) {
                         List {
-                            ForEach(filteredMovies(watched: false)) { movie in
+                            ForEach(sortedMovies) { movie in
                                 NavigationLink {
                                     DetailPage(media: movie)
                                 } label: {
@@ -50,7 +145,7 @@ struct ContentView: View {
                     }
                     else {
                         List {
-                            ForEach(filteredShows(watched: false)) { show in
+                            ForEach(sortedShows) { show in
                                 NavigationLink {
                                     DetailPage(media: show)
                                 } label: {
@@ -62,8 +157,8 @@ struct ContentView: View {
                     }
                 }
                 else {
-                    if(moviesList){
-                        List(filteredMovies(watched: true)) { movie in
+                    if (moviesList) {
+                        List(sortedMovies) { movie in
                             NavigationLink {
                                 DetailPage(media: movie)
                             } label: {
@@ -72,7 +167,7 @@ struct ContentView: View {
                         }
                     }
                     else {
-                        List(filteredShows(watched: true)) { show in
+                        List(sortedShows) { show in
                             NavigationLink {
                                 DetailPage(media: show)
                             } label: {
@@ -82,44 +177,119 @@ struct ContentView: View {
                     }
                 }
                 Spacer()
-                //Will style to make buttons look better later 
-                HStack{
-                    Spacer()
-                    Button(history ? "Watch List" : "History"){
-                        history.toggle()
-                    }
-                    Spacer()
-                    NavigationLink {
-                        Search(movies: moviesList)
-                    } label: {
-                        Text("Search")
-                    }
-                    Spacer()
-                }
-                .buttonStyle(.borderedProminent)
+//                //Will style to make buttons look better later 
+//                HStack{
+//                    Spacer()
+//                    Button(history ? "Watch List" : "History"){
+//                        history.toggle()
+//                    }
+//                    Spacer()
+//                    NavigationLink {
+//                        Search(movies: moviesList)
+//                    } label: {
+//                        Text("Search")
+//                    }
+//                    Spacer()
+//                    
+//                    Menu("Sort & Filter", systemImage: "arrow.up.arrow.down") {
+//                        
+//                        Section("Sort") {
+//                            ForEach(SortOption.allCases) { option in
+//                                Button(option.rawValue) { sortOption = option }
+//                            }
+//                        }
+//                        
+//                        Section("Filter") {
+//                            Menu("By Genre…") {
+//                                ForEach(availableGenres, id: \.self) { genre in
+//                                    Button {
+//                                        if selectedGenres.contains(genre) {
+//                                            selectedGenres.remove(genre)
+//                                        } else {
+//                                            selectedGenres.insert(genre)
+//                                        }
+//                                    } label: {
+//                                        Label(genre,
+//                                              systemImage: selectedGenres.contains(genre) ? "checkmark" : "")
+//                                    }
+//                                }
+//                                Divider()
+//                                Button("Clear Genres") {
+//                                    selectedGenres.removeAll()
+//                                }
+//                            }
+//                        }
+//                    }
+//                    Spacer()
+//                }
+//                .buttonStyle(.borderedProminent)
             }
             .navigationTitle(history ? (moviesList ? "Movie Watch History" : "TV Show Watch History") : moviesList ? "Movie Watchlist" : "TV Show Watchlist")
             .toolbar {
-                Button("Switch Media Type", systemImage: "arrow.trianglehead.2.clockwise"){
-                    moviesList.toggle()
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Switch Media Type", systemImage: "arrow.trianglehead.2.clockwise"){
+                        moviesList.toggle()
+                    }
                 }
-            }
+                ToolbarItemGroup(placement: .bottomBar) {
+                    Picker("", selection: $history) {
+                      Label("Watchlist", systemImage: "list.bullet").tag(false)
+                      Label("History",   systemImage: "clock.arrow.circlepath").tag(true)
+                    }
+                    .pickerStyle(.segmented)
+                    .controlSize(.large)
+                    .foregroundStyle(.blue)
+                    
+                    Spacer()
+                    
+                    NavigationLink {
+                      Search(movies: moviesList)
+                    } label: {
+                      Label("Search", systemImage: "plus")
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
+                    
+                    Spacer()
+                    
+                    Menu {
+                        Section("Sort") {
+                            ForEach(SortOption.allCases) { option in
+                                Button(option.rawValue) { sortOption = option }
+                            }
+                        }
+                        
+                        Section("Filter") {
+                            Menu("By Genre…") {
+                                ForEach(availableGenres, id: \.self) { genre in
+                                    Button {
+                                        if selectedGenres.contains(genre) {
+                                            selectedGenres.remove(genre)
+                                        } else {
+                                            selectedGenres.insert(genre)
+                                        }
+                                    } label: {
+                                        Label(genre,
+                                              systemImage: selectedGenres.contains(genre) ? "checkmark" : "")
+                                    }
+                                }
+                                Divider()
+                                Button("Clear Genres") {
+                                    selectedGenres.removeAll()
+                                }
+                            }
+                        }
+                    } label: {
+                      Label("Sort", systemImage: "arrow.up.arrow.down")
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
+                  }            }
             .sheet(isPresented:$firstLaunch){
                 IntroSheet(firstLaunch: $firstLaunch)
             }
+            .accentColor(.blue)
         }
         
     }
-    
-    private func filteredMovies(watched: Bool) -> [Movie] {
-        allMovies.filter { watched ? $0.dateWatched != nil : $0.dateWatched == nil}
-    }
-    
-    private func filteredShows(watched: Bool) -> [TVShow] {
-        allTVShows.filter { watched ? $0.dateWatched != nil : $0.dateWatched == nil}
-    }
 }
-
-//#Preview {
-//    ContentView(/*movies: [Movie(id: 1, title: "A Minecraft Movie", genres: ["Action"], year: "2025", runtime: 120, synopsis: "Overview", posterPath: "/yFHHfHcUgGAxziP1C3lLt0q2T4s.jpg", mediaType: "movie")], shows: [], movieHistory: [], showHistory: []*/)
-//}
