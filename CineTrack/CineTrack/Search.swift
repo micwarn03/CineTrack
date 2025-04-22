@@ -62,7 +62,7 @@ struct Search: View {
                         try? context.save()
                         dismiss()
                     } label : {
-                        ListRow(movie: movie, isMovie: true)
+                        ListRow(media: movie, isMovie: true)
                     }
                 }
             }
@@ -76,7 +76,7 @@ struct Search: View {
                         try? context.save()
                         dismiss()
                     } label : {
-                        ListRow(show: show, isMovie: false)
+                        ListRow(media: show, isMovie: false)
                     }
                 }
             }

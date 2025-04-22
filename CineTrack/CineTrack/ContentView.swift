@@ -136,7 +136,7 @@ struct ContentView: View {
                                 NavigationLink {
                                     DetailPage(media: movie)
                                 } label: {
-                                    ListRow(movie: movie, isMovie: true)
+                                    ListRow(media: movie, isMovie: true)
                                 }
                             }
                             .onDelete(perform: deleteMovie)
@@ -148,7 +148,7 @@ struct ContentView: View {
                                 NavigationLink {
                                     DetailPage(media: show)
                                 } label: {
-                                    ListRow(show: show, isMovie: false)
+                                    ListRow(media: show, isMovie: false)
                                 }
                             }
                             .onDelete(perform: deleteShow)
@@ -161,7 +161,7 @@ struct ContentView: View {
                             NavigationLink {
                                 DetailPage(media: movie)
                             } label: {
-                                ListRow(movie: movie, isMovie: true)
+                                ListRow(media: movie, isMovie: true)
                             }
                         }
                     }
@@ -170,7 +170,7 @@ struct ContentView: View {
                             NavigationLink {
                                 DetailPage(media: show)
                             } label: {
-                                ListRow(show: show, isMovie: false)
+                                ListRow(media: show, isMovie: false)
                             }
                         }
                     }
