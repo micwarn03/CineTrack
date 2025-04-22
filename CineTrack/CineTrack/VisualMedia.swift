@@ -18,5 +18,6 @@ protocol VisualMedia : AnyObject {
     var dateWatched: Date? { get set }
     var userReview: String? { get set }
     var thumbsUp: Bool? { get set }
+    var dateAdded: Date? { get set }
     
 }

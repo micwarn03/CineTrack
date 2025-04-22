@@ -21,6 +21,7 @@ class Movie : Identifiable, VisualMedia {
     var dateWatched: Date? = nil
     var userReview: String? = nil
     var thumbsUp: Bool? = nil
+    var dateAdded: Date? = nil
     
     init(id: Int32, title: String, genres: [String], year: String, runtime: Int, synopsis: String, posterPath: String, mediaType: String) {
         self.id = id

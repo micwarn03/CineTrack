@@ -58,6 +58,7 @@ struct Search: View {
                 List(movieResults.filter { !existingMovieIDs.contains($0.id) }) { result in
                     let movie = convertMovieResult(result: result)
                     Button {
+                        movie.dateAdded = .now
                         context.insert(movie)
                         try? context.save()
                         dismiss()
@@ -72,6 +73,7 @@ struct Search: View {
                 List(showResults.filter { !existingShowIDs.contains($0.id) }) { result in
                     let show = convertTVResult(result: result)
                     Button {
+                        show.dateAdded = .now
                         context.insert(show)
                         try? context.save()
                         dismiss()

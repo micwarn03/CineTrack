@@ -15,6 +15,8 @@ enum SortOption: String, CaseIterable, Identifiable {
     case oldToNew = "Oldest → Newest"
     case runtimeAscending = "Runtime ↑"
     case runtimeDescending = "Runtime ↓"
+    case addedNewest = "Newest Added"
+    case addedOldest = "Oldest Added"
     
     var id: String { rawValue }
 }
@@ -29,21 +31,25 @@ struct ContentView: View {
     @State var searching = false
     @State var history = false
     
-    @State private var sortOption: SortOption = .aToZ
+    @State private var sortOption: SortOption = .addedNewest
     @State private var selectedGenres: Set<String> = []
     
     @AppStorage("firstLaunch") var firstLaunch = true
     
-    func deleteMovie(_ indexSet: IndexSet) {
-        for index in indexSet {
-            context.delete(allMovies[index])
-        }
+    func deleteMovie(at offsets: IndexSet) {
+        offsets
+          .map { sortedMovies[$0] }
+          .forEach { movie in
+            context.delete(movie)
+          }
     }
     
-    func deleteShow(_ indexSet: IndexSet) {
-        for index in indexSet {
-            context.delete(allTVShows[index])
-        }
+    func deleteShow(at offsets: IndexSet) {
+        offsets
+          .map { sortedShows[$0] }
+          .forEach { show in
+            context.delete(show)
+          }
     }
     
     private var availableGenres: [String] {
@@ -87,6 +93,14 @@ struct ContentView: View {
                 return list.sorted {
                     $0.runtime > $1.runtime
                 }
+            case .addedNewest:
+                return list.sorted {
+                    ($0.dateAdded ?? .distantPast) > ($1.dateAdded ?? .distantPast)
+                }
+            case .addedOldest:
+                return list.sorted {
+                    ($0.dateAdded ?? .distantPast) < ($1.dateAdded ?? .distantPast)
+                }
         }
     }
     
@@ -114,7 +128,8 @@ struct ContentView: View {
                 }
             case .oldToNew:
                 return list.sorted {
-                    (Int($0.years.last ?? "") ?? 0) < (Int($1.years.last ?? "") ?? 0)                }
+                    (Int($0.years.last ?? "") ?? 0) < (Int($1.years.last ?? "") ?? 0)
+                }
             case .runtimeAscending:
                 return list.sorted {
                     $0.numSeasons < $1.numSeasons
@@ -122,6 +137,14 @@ struct ContentView: View {
             case .runtimeDescending:
                 return list.sorted {
                     $0.numSeasons > $1.numSeasons
+                }
+            case .addedNewest:
+                return list.sorted {
+                    ($0.dateAdded ?? .distantPast) > ($1.dateAdded ?? .distantPast)
+                }
+            case .addedOldest:
+                return list.sorted {
+                    ($0.dateAdded ?? .distantPast) < ($1.dateAdded ?? .distantPast)
                 }
         }
     }
@@ -208,7 +231,17 @@ struct ContentView: View {
                     Menu {
                         Section("Sort") {
                             ForEach(SortOption.allCases) { option in
-                                Button(option.rawValue) { sortOption = option }
+                                Button {
+                                    sortOption = option
+                                } label: {
+                                    HStack {
+                                        Text(option.rawValue)
+                                        Spacer()
+                                        if sortOption == option {
+                                            Image(systemName: "checkmark")
+                                        }
+                                    }
+                                }
                             }
                         }
                         

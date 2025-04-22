@@ -21,6 +21,7 @@ class TVShow : Identifiable, VisualMedia {
     var dateWatched: Date? = nil
     var userReview: String? = nil
     var thumbsUp: Bool? = nil
+    var dateAdded: Date? = nil
     
     init(id: Int32, title: String, genres: [String], years: [String], synopsis: String, posterPath: String, mediaType: String, numSeasons: Int) {
         self.id = id
