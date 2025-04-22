@@ -6,11 +6,14 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct Search: View {
     @Environment(\.dismiss) var dismiss
     @Environment(\.modelContext) private var context
     
+    @Query var allMovies: [Movie]
+    @Query var allTVShows: [TVShow]
     
     @State var searchText = ""
     @State var results: [result] = []
@@ -24,6 +27,7 @@ struct Search: View {
             Spacer()
             HStack{
                 TextField("Search...", text: $searchText)
+                    .textFieldStyle(.roundedBorder)
                 Button("Search", systemImage: "magnifyingglass"){
                     movieResults = []
                     showResults = []
@@ -49,7 +53,9 @@ struct Search: View {
             }
             .padding()
             if movies {
-                List(movieResults) { result in
+                let existingMovieIDs = Set(allMovies.map(\.id))
+                
+                List(movieResults.filter { !existingMovieIDs.contains($0.id) }) { result in
                     let movie = convertMovieResult(result: result)
                     Button {
                         context.insert(movie)
@@ -61,7 +67,9 @@ struct Search: View {
                 }
             }
             else {
-                List(showResults) { result in
+                let existingShowIDs = Set(allTVShows.map(\.id))
+                
+                List(showResults.filter { !existingShowIDs.contains($0.id) }) { result in
                     let show = convertTVResult(result: result)
                     Button {
                         context.insert(show)
@@ -74,8 +82,4 @@ struct Search: View {
             }
         }
     }
-}
-
-#Preview {
-    //Search(results: [])
 }

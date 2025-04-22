@@ -43,7 +43,7 @@ struct DetailHeader: View {
                 Text(media.title)
                     .font(.title.bold())
                     .fixedSize(horizontal: false, vertical: true)
-                    .lineLimit(2)
+                    .lineLimit(3)
                 
                 let dateText: String = {
                     if let movie = media as? Movie {

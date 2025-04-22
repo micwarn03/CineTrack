@@ -129,7 +129,6 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                
                 if !history {
                     if (moviesList) {
                         List {
@@ -177,52 +176,6 @@ struct ContentView: View {
                     }
                 }
                 Spacer()
-//                //Will style to make buttons look better later 
-//                HStack{
-//                    Spacer()
-//                    Button(history ? "Watch List" : "History"){
-//                        history.toggle()
-//                    }
-//                    Spacer()
-//                    NavigationLink {
-//                        Search(movies: moviesList)
-//                    } label: {
-//                        Text("Search")
-//                    }
-//                    Spacer()
-//                    
-//                    Menu("Sort & Filter", systemImage: "arrow.up.arrow.down") {
-//                        
-//                        Section("Sort") {
-//                            ForEach(SortOption.allCases) { option in
-//                                Button(option.rawValue) { sortOption = option }
-//                            }
-//                        }
-//                        
-//                        Section("Filter") {
-//                            Menu("By Genre…") {
-//                                ForEach(availableGenres, id: \.self) { genre in
-//                                    Button {
-//                                        if selectedGenres.contains(genre) {
-//                                            selectedGenres.remove(genre)
-//                                        } else {
-//                                            selectedGenres.insert(genre)
-//                                        }
-//                                    } label: {
-//                                        Label(genre,
-//                                              systemImage: selectedGenres.contains(genre) ? "checkmark" : "")
-//                                    }
-//                                }
-//                                Divider()
-//                                Button("Clear Genres") {
-//                                    selectedGenres.removeAll()
-//                                }
-//                            }
-//                        }
-//                    }
-//                    Spacer()
-//                }
-//                .buttonStyle(.borderedProminent)
             }
             .navigationTitle(history ? (moviesList ? "Movie Watch History" : "TV Show Watch History") : moviesList ? "Movie Watchlist" : "TV Show Watchlist")
             .toolbar {
@@ -233,8 +186,8 @@ struct ContentView: View {
                 }
                 ToolbarItemGroup(placement: .bottomBar) {
                     Picker("", selection: $history) {
-                      Label("Watchlist", systemImage: "list.bullet").tag(false)
-                      Label("History",   systemImage: "clock.arrow.circlepath").tag(true)
+                        Label("Watchlist", systemImage: "list.bullet").tag(false)
+                        Label("History",   systemImage: "clock.arrow.circlepath").tag(true)
                     }
                     .pickerStyle(.segmented)
                     .controlSize(.large)
@@ -243,9 +196,9 @@ struct ContentView: View {
                     Spacer()
                     
                     NavigationLink {
-                      Search(movies: moviesList)
+                        Search(movies: moviesList)
                     } label: {
-                      Label("Search", systemImage: "plus")
+                        Label("Search", systemImage: "plus")
                     }
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)
@@ -269,8 +222,13 @@ struct ContentView: View {
                                             selectedGenres.insert(genre)
                                         }
                                     } label: {
-                                        Label(genre,
-                                              systemImage: selectedGenres.contains(genre) ? "checkmark" : "")
+                                        HStack {
+                                            Text(genre)
+                                            Spacer()
+                                            if selectedGenres.contains(genre) {
+                                                Image(systemName: "checkmark")
+                                            }
+                                        }
                                     }
                                 }
                                 Divider()
@@ -280,16 +238,17 @@ struct ContentView: View {
                             }
                         }
                     } label: {
-                      Label("Sort", systemImage: "arrow.up.arrow.down")
+                        Label("Sort", systemImage: "arrow.up.arrow.down")
                     }
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)
-                  }            }
+                }
+            }
             .sheet(isPresented:$firstLaunch){
                 IntroSheet(firstLaunch: $firstLaunch)
             }
             .accentColor(.blue)
         }
-        
     }
 }
+    
